@@ -1,4 +1,5 @@
 ﻿using AmpereChat.API.Models;
+using AmpereChat.API.Repositories;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,12 +13,16 @@ namespace AmpereChat.API.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly IConfiguration _config;
-        public MessagesController(IConfiguration config)
+        private AppRepository _repo;
+        public MessagesController(IConfiguration config, AppRepository repo)
         {
             _config = config;
+            _repo = repo;
         }
 
+
         [HttpGet]
+        // GET /api/messages?chatId=1
         public async Task<IActionResult> GetMessages([FromQuery] int chatId)
         {
             try
@@ -36,6 +41,28 @@ namespace AmpereChat.API.Controllers
             {
                 return StatusCode(500, $"Error: {ex.Message}");
             }
+        }
+
+        
+        [HttpPost]
+        // POST /api/messages
+        public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
+        {
+            // Chat check
+            var chat = await _repo.GetChatById(request.ChatId);
+            if (chat == null)
+                return BadRequest("Чат не найден");
+
+            // Временно userId берём из запроса (потом заменим на токен)
+            var messageId = await _repo.AddMessage(request.ChatId, request.UserId, request.Text);
+            return Ok(new { messageId, message = "Сообщение отправлено" });
+        }
+
+        public class SendMessageRequest
+        {
+            public int ChatId { get; set; }
+            public int UserId { get; set; }   // временно
+            public string Text { get; set; } = "";
         }
     }
 }
