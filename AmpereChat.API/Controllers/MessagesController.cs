@@ -1,13 +1,16 @@
 ﻿using AmpereChat.API.Models;
 using AmpereChat.API.Repositories;
 using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using System.Security.Claims;
 
 namespace AmpereChat.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class MessagesController : ControllerBase
@@ -48,20 +51,23 @@ namespace AmpereChat.API.Controllers
         // POST /api/messages
         public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized();
+            int userId = int.Parse(userIdClaim.Value);
+
             // Chat check
             var chat = await _repo.GetChatById(request.ChatId);
             if (chat == null)
                 return BadRequest("Чат не найден");
 
             // Временно userId берём из запроса (потом заменим на токен)
-            var messageId = await _repo.AddMessage(request.ChatId, request.UserId, request.Text);
+            var messageId = await _repo.AddMessage(request.ChatId, userId, request.Text);
             return Ok(new { messageId, message = "Сообщение отправлено" });
         }
 
         public class SendMessageRequest
         {
             public int ChatId { get; set; }
-            public int UserId { get; set; }   // временно
             public string Text { get; set; } = "";
         }
     }
