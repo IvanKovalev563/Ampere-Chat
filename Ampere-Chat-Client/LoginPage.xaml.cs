@@ -36,7 +36,7 @@ namespace Ampere_Chat_Client
             _apiService.SetToken(token);
 
             // Переход на главную страницу
-            //await Navigation.PushAsync(new ChatsPage(_apiService));
+            await Navigation.PushAsync(new ChatsPage(_apiService));
         }
 
         private async void OnRegisterClicked(object sender, EventArgs e)

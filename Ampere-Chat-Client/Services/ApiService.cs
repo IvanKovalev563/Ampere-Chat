@@ -47,7 +47,7 @@ namespace Ampere_Chat_Client.Services
         // Получить список чатов (требует токен)
         public async Task<List<ChatDto>> GetChatsAsync()
         {
-            var response = await _httpClient.GetAsync("/api/chats");
+            var response = await _httpClient.GetAsync("/api/Chats");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<List<ChatDto>>() ?? new();
         }

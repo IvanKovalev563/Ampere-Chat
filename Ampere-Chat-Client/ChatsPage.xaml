@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ampere_Chat_Client.ChatsPage"
+             Title="Чаты">
+    <Grid Padding="10" RowDefinitions="Auto,*">
+        <!-- Заголовок (опционально) -->
+        <Label Grid.Row="0" Text="Ваши чаты" FontSize="20" FontAttributes="Bold" Margin="0,0,0,10" />
+
+        <!-- Список чатов -->
+        <CollectionView Grid.Row="1" x:Name="ChatsCollectionView"
+                        ItemsSource="{Binding Chats}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnChatSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10" ColumnDefinitions="Auto,*" BackgroundColor="White" Margin="0,0,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Аватар (круглая заглушка) -->
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 25"
+                                BackgroundColor="#512BD4"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center">
+                            <Label Text="{Binding display_name, Converter={StaticResource FirstLetterConverter}}"
+                                   TextColor="White"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <!-- Имя и последнее сообщение -->
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="{Binding display_name}" FontSize="16" FontAttributes="Bold" />
+                            <Label Text="{Binding last_message}" FontSize="14" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
