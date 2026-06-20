@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ampere_Chat_Client.LoginPage"
+             Title="Вход">
+    <Grid Padding="30" VerticalOptions="Center">
+        <VerticalStackLayout Spacing="15">
+            <Label Text="Ampere Chat" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center" />
+            <Label Text="Войдите в аккаунт" FontSize="18" TextColor="Gray" HorizontalOptions="Center" />
+
+            <Entry x:Name="UsernameEntry" Placeholder="Имя пользователя" />
+            <Entry x:Name="PasswordEntry" Placeholder="Пароль" IsPassword="True" />
+
+            <Button Text="Войти" Clicked="OnLoginClicked" BackgroundColor="#512BD4" TextColor="White" />
+            <Button Text="Зарегистрироваться" Clicked="OnRegisterClicked" BackgroundColor="Transparent" TextColor="#512BD4" />
+
+            <Label x:Name="MessageLabel" Text="" IsVisible="False" TextColor="Red" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
