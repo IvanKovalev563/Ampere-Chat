@@ -6,13 +6,14 @@ namespace Ampere_Chat_Client
 {
     public partial class ChatsPage : ContentPage
     {
+        public event EventHandler<ChatDto> ChatSelected;
         private readonly ApiService _apiService;
         public ObservableCollection<ChatDto> Chats { get; set; } = new();
 
-        public ChatsPage(ApiService apiService)
+        public ChatsPage()
         {
             InitializeComponent();
-            _apiService = apiService;
+            _apiService = AppState.ApiService ?? throw new Exception("ApiService not initialized");
             BindingContext = this;
         }
 
@@ -41,13 +42,16 @@ namespace Ampere_Chat_Client
         {
             if (e.CurrentSelection.FirstOrDefault() is ChatDto selectedChat)
             {
-                // Снимаем выделение
                 ChatsCollectionView.SelectedItem = null;
-
-                // Переход на страницу переписки (создадим позже)
-                await DisplayAlert("Выбран чат", $"Чат с {selectedChat.display_name}", "ОК");
-                // await Navigation.PushAsync(new ChatPage(_apiService, selectedChat.chat_id));
+                ChatSelected?.Invoke(this, selectedChat);
+                // Если на мобилке — переходим на ChatPage
+                if (DeviceInfo.Idiom == DeviceIdiom.Phone)
+                    await Navigation.PushAsync(new ChatPage(_apiService, selectedChat.chat_id, selectedChat.display_name));
             }
+        }
+        private async void OnNewChatClicked(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new NewChatPage(_apiService));
         }
     }
 }

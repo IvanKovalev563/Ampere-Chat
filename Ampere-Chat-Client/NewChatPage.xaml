@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Ampere_Chat_Client.Converters"
+             x:Class="Ampere_Chat_Client.NewChatPage"
+             Title="Новый чат">
+
+    <ContentPage.Resources>
+        <converters:FirstLetterConverter x:Key="FirstLetterConverter" />
+    </ContentPage.Resources>
+
+    <Grid Padding="10" RowDefinitions="Auto, *">
+        <SearchBar Grid.Row="0" 
+                   x:Name="SearchBar"
+                   Placeholder="Поиск пользователей..."
+                   TextChanged="OnSearchTextChanged" />
+
+        <CollectionView Grid.Row="1" 
+                        x:Name="UsersCollectionView"
+                        SelectionMode="Single"
+                        SelectionChanged="OnUserSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10" ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 25"
+                                BackgroundColor="Gray"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center">
+                            <Label Text="{Binding username, Converter={StaticResource FirstLetterConverter}}"
+                                   TextColor="White"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <Label Grid.Column="1" 
+                               Text="{Binding username}" 
+                               FontSize="16"
+                               VerticalOptions="Center"
+                               Margin="10,0,0,0" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

@@ -60,6 +60,12 @@ namespace AmpereChat.API.Controllers
 
             return Ok(new { token = tokenString, username = user.username });
         }
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await _repo.GetAllUsers();
+            return Ok(users);
+        }
     }
     public class RegisterRequest
     {

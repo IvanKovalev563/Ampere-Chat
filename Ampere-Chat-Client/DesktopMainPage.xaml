@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ampere_Chat_Client"
+             x:Class="Ampere_Chat_Client.DesktopMainPage"
+             Title="Ampere Chat"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <Grid ColumnDefinitions="350, *">
+        <!-- Левая колонка -->
+        <Grid Grid.Column="0" BackgroundColor="{DynamicResource CardBackground}">
+            <Grid RowDefinitions="Auto, *">
+                <!-- Шапка -->
+                <Grid Padding="10" BackgroundColor="{DynamicResource Primary}">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Ellipse Grid.Column="0" WidthRequest="40" HeightRequest="40" Fill="White" />
+                        <ImageButton Grid.Column="1" Source="plus.png" 
+                                     WidthRequest="24" HeightRequest="24"
+                                     HorizontalOptions="End"
+                                     Clicked="OnNewChatClicked" />
+                    </Grid>
+                </Grid>
+
+                <!-- Список чатов -->
+                <local:ChatsView Grid.Row="1" x:Name="ChatsListView" />
+            </Grid>
+        </Grid>
+
+        <!-- Правая колонка -->
+        <Grid Grid.Column="1" BackgroundColor="{DynamicResource PageBackgroundColor}">
+            <ContentView x:Name="ChatDetailContainer">
+                <!-- Заглушка -->
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                    <Label Text="Выберите чат" FontSize="24" TextColor="{DynamicResource TextColor}" />
+                    <Label Text="Чтобы начать переписку" FontSize="16" TextColor="{DynamicResource SecondaryTextColor}" />
+                </VerticalStackLayout>
+            </ContentView>
+        </Grid>
+    </Grid>
+</ContentPage>

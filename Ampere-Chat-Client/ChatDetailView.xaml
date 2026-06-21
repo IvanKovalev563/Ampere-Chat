@@ -1,0 +1,75 @@
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Ampere_Chat_Client.Converters"
+             x:Class="Ampere_Chat_Client.ChatDetailView"
+             x:Name="ChatDetailViewRoot">
+
+    <ContentView.Resources>
+        <converters:UserIdToColorConverter x:Key="UserIdToColorConverter" />
+        <converters:UserIdToHorizontalOptionsConverter x:Key="UserIdToHorizontalOptionsConverter" />
+        <converters:UserIdToVisibilityConverter x:Key="UserIdToVisibilityConverter" />
+    </ContentView.Resources>
+
+    <Grid RowDefinitions="*, Auto">
+        <CollectionView Grid.Row="0" x:Name="MessagesCollectionView"
+                        ItemsSource="{Binding Messages}"
+                        VerticalOptions="FillAndExpand">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*, *">
+                        <!-- Левая колонка (для чужих сообщений) -->
+                        <Frame Grid.Column="0" 
+                   CornerRadius="10" 
+                   Padding="10"
+                   HorizontalOptions="Start"
+                   BackgroundColor="{Binding user_id, Converter={StaticResource UserIdToColorConverter}}"
+                   IsVisible="{Binding user_id, Converter={StaticResource UserIdToVisibilityConverter}, ConverterParameter=own}"
+                   Margin="5,2">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding text}" 
+                           TextColor="Black" 
+                           FontSize="14" />
+                                <Label Text="{Binding sent_at, StringFormat='{0:HH:mm}'}" 
+                           TextColor="Gray" 
+                           FontSize="10"
+                           HorizontalOptions="End" />
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <!-- Правая колонка (для своих сообщений) -->
+                        <Frame Grid.Column="1" 
+                   CornerRadius="10" 
+                   Padding="10"
+                   HorizontalOptions="End"
+                   BackgroundColor="{Binding user_id, Converter={StaticResource UserIdToColorConverter}}"
+                   IsVisible="{Binding user_id, Converter={StaticResource UserIdToVisibilityConverter}, ConverterParameter=!own}"
+                   Margin="5,2">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding text}" 
+                           TextColor="Black" 
+                           FontSize="14" />
+                                <Label Text="{Binding sent_at, StringFormat='{0:HH:mm}'}" 
+                           TextColor="Gray" 
+                           FontSize="10"
+                           HorizontalOptions="End" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Grid Grid.Row="1" Padding="10" ColumnDefinitions="*, Auto">
+            <Entry x:Name="MessageEntry" 
+                   Placeholder="Введите сообщение..." 
+                   Grid.Column="0"
+                   ReturnType="Send"
+                   Completed="OnMessageEntryCompleted" />
+            <Button Text="Отправить" 
+                    Grid.Column="1" 
+                    Clicked="OnSendClicked"
+                    BackgroundColor="#512BD4"
+                    TextColor="White" />
+        </Grid>
+    </Grid>
+</ContentView>

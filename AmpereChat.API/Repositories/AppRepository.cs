@@ -27,6 +27,12 @@ namespace AmpereChat.API.Repositories
             var sql = "INSERT INTO User (username, password_hash) VALUES (@username, @passwordHash); SELECT LAST_INSERT_ID();";
             return await conn.ExecuteScalarAsync<int>(sql, new { username, passwordHash });
         }
+        public async Task<IEnumerable<User>> GetAllUsers()
+        {
+            using var conn = new MySqlConnection(_connectionString);
+            var sql = "SELECT user_id, username FROM User";
+            return await conn.QueryAsync<User>(sql);
+        }
 
         // ---- Messages ----
         public async Task<IEnumerable<Message>> GetMessages(int chatId, int limit = 50)

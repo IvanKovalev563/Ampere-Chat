@@ -1,6 +1,8 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.Maui.Storage;
+using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Text.Json;
-using Microsoft.Maui.Storage;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Ampere_Chat_Client.Services
 {
@@ -67,6 +69,41 @@ namespace Ampere_Chat_Client.Services
                 new { chatId, text });
             return response.IsSuccessStatusCode;
         }
+        // Получить всех пользователей
+        public async Task<List<UserDto>> GetAllUsersAsync()
+        {
+            var response = await _httpClient.GetAsync("/api/auth/users");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<List<UserDto>>() ?? new();
+        }
+
+        // Создать личный чат
+        public async Task<CreateChatResult?> CreatePrivateChatAsync(int otherUserId)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/chats/private", new { otherUserId });
+            if (!response.IsSuccessStatusCode) return null;
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<CreateChatResult>(json);
+        }
+        public int GetCurrentUserId()
+        {
+            var token = Preferences.Get("auth_token", string.Empty);
+            if (string.IsNullOrEmpty(token)) return 0;
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                // Ищем claim с типом "nameid" (это то, что в токене)
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "nameid");
+                if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                    return userId;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка парсинга токена: {ex.Message}");
+            }
+            return 0;
+        }
     }
 
     // DTO для чатов
@@ -75,8 +112,19 @@ namespace Ampere_Chat_Client.Services
         public int chat_id { get; set; }
         public string display_name { get; set; } = "";
         public string last_message { get; set; } = "";
-        public DateTime last_message_time { get; set; }
-        public bool is_group { get; set; }
+        public string last_message_time { get; set; }
+        public int is_group { get; set; }
+    }
+    public class UserDto
+    {
+        public int user_id { get; set; }
+        public string username { get; set; } = "";
+    }
+
+    public class CreateChatResult
+    {
+        public int chatId { get; set; }
+        public string message { get; set; } = "";
     }
 
     // DTO для сообщений

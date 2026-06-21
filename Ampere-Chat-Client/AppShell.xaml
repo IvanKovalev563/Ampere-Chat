@@ -5,11 +5,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Ampere_Chat_Client"
     Shell.FlyoutBehavior="Disabled"
-    Title="Ampere_Chat_Client">
+    Title="Ampere Chat">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:LoginPage}"
-        Route="MainPage" />
+    <TabBar>
+        <Tab Title="Чаты" Icon="chat.png">
+            <ShellContent ContentTemplate="{DataTemplate local:ChatsPage}" />
+        </Tab>
+        <Tab Title="Настройки" Icon="settings.png">
+            <ShellContent ContentTemplate="{DataTemplate local:SettingsPage}" />
+        </Tab>
+    </TabBar>
 
 </Shell>

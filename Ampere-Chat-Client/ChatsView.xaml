@@ -1,0 +1,45 @@
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Ampere_Chat_Client.Converters"
+             x:Class="Ampere_Chat_Client.ChatsView">
+
+    <ContentView.Resources>
+        <converters:FirstLetterConverter x:Key="FirstLetterConverter" />
+    </ContentView.Resources>
+
+    <Grid Padding="10" RowDefinitions="Auto, *">
+        <Label Grid.Row="0" Text="Чаты" FontSize="20" FontAttributes="Bold" Margin="0,0,0,10" />
+
+        <CollectionView Grid.Row="1" x:Name="ChatsCollectionView"
+                        ItemsSource="{Binding Chats}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnChatSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10" ColumnDefinitions="Auto,*" Margin="0,0,0,5">
+
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 25"
+                                BackgroundColor="#512BD4"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center">
+                            <Label Text="{Binding display_name, Converter={StaticResource FirstLetterConverter}}"
+                                   TextColor="White"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="{Binding display_name}" FontSize="16" FontAttributes="Bold" />
+                            <Label Text="{Binding last_message}" FontSize="14" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView>

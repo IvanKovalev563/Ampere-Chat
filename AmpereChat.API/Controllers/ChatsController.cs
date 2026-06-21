@@ -16,7 +16,7 @@ namespace AmpereChat.API.Controllers
             _repo = repo;
         }
 
-        // GET /api/chats – список чатов текущего пользователя
+        // GET /api/chats
         [HttpGet]
         public async Task<IActionResult> GetChats()
         {
@@ -28,7 +28,7 @@ namespace AmpereChat.API.Controllers
             return Ok(chats);
         }
 
-        // POST /api/chats/private – создать личный чат с другим пользователем
+        // POST /api/chats/private
         [HttpPost("private")]
         public async Task<IActionResult> CreatePrivateChat([FromBody] CreatePrivateChatRequest request)
         {
@@ -36,20 +36,17 @@ namespace AmpereChat.API.Controllers
             if (userIdClaim == null) return Unauthorized();
             int currentUserId = int.Parse(userIdClaim.Value);
 
-            // Проверяем, не существует ли уже чат между этими пользователями
             var existingChatId = await _repo.GetPrivateChatBetweenUsers(currentUserId, request.OtherUserId);
             if (existingChatId.HasValue)
                 return Ok(new { chatId = existingChatId.Value, message = "Чат уже существует" });
 
-            // Создаём новый
             var newChatId = await _repo.CreatePrivateChat(currentUserId, request.OtherUserId);
             return Ok(new { chatId = newChatId, message = "Чат создан" });
         }
     }
 
-    // DTO для запроса создания личного чата
     public class CreatePrivateChatRequest
     {
-        public int OtherUserId { get; set; } // ID собеседника
+        public int OtherUserId { get; set; }
     }
 }

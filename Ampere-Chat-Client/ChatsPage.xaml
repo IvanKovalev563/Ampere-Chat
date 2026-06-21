@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Ampere_Chat_Client.Converters"
              x:Class="Ampere_Chat_Client.ChatsPage"
-             Title="Чаты">
+             Title="Чаты" >
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="+" Clicked="OnNewChatClicked" Order="Primary" Priority="0" />
+    </ContentPage.ToolbarItems>
+
+    <ContentPage.Resources>
+        <converters:FirstLetterConverter x:Key="FirstLetterConverter" />
+    </ContentPage.Resources>
+
     <Grid Padding="10" RowDefinitions="Auto,*">
         <!-- Заголовок (опционально) -->
-        <Label Grid.Row="0" Text="Ваши чаты" FontSize="20" FontAttributes="Bold" Margin="0,0,0,10" />
+        <Label Grid.Row="0" Text="Ваши чаты" FontSize="20" FontAttributes="Bold" Margin="10,0,0,10" />
 
         <!-- Список чатов -->
         <CollectionView Grid.Row="1" x:Name="ChatsCollectionView"
@@ -14,11 +24,7 @@
                         SelectionChanged="OnChatSelected">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="10" ColumnDefinitions="Auto,*" BackgroundColor="White" Margin="0,0,0,5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                    <Grid Padding="10" ColumnDefinitions="Auto,*" BackgroundColor="{DynamicResource CardBackground}" Margin="0,0,0,5">
 
                         <!-- Аватар (круглая заглушка) -->
                         <Border Grid.Column="0"
@@ -37,7 +43,7 @@
                         </Border>
 
                         <!-- Имя и последнее сообщение -->
-                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="10,3,0,0">
                             <Label Text="{Binding display_name}" FontSize="16" FontAttributes="Bold" />
                             <Label Text="{Binding last_message}" FontSize="14" TextColor="Gray" />
                         </VerticalStackLayout>
