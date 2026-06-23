@@ -30,14 +30,18 @@ namespace Ampere_Chat_Client
                 ShowMessage("Неверный логин или пароль");
                 return;
             }
-            if (token != null)
-            {
-                Preferences.Set("auth_token", token);
-                System.Diagnostics.Debug.WriteLine($"Токен сохранён: {token}");
-                _apiService.SetToken(token);
-                AppState.ApiService = _apiService;
+
+            Preferences.Set("auth_token", token);
+            _apiService.SetToken(token);
+
+            // Устанавливаем ApiService в статический класс
+            AppState.ApiService = _apiService;
+
+            // Переход на главную страницу
+            if (DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet)
+                Application.Current.MainPage = new NavigationPage(new DesktopMainPage(_apiService));
+            else
                 Application.Current.MainPage = new AppShell();
-            }
         }
 
         private async void OnRegisterClicked(object sender, EventArgs e)

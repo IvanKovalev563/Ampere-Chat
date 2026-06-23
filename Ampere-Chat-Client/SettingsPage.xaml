@@ -4,7 +4,6 @@
              x:Class="Ampere_Chat_Client.SettingsPage"
              Title="Настройки">
     <VerticalStackLayout Padding="20" Spacing="15">
-        <Label Text="Настройки" FontSize="24" FontAttributes="Bold" />
         <Label Text="Здесь будут настройки аккаунта и приложения." />
         <Button Text="Выйти" Clicked="OnLogoutClicked" BackgroundColor="Red" TextColor="White" />
     </VerticalStackLayout>

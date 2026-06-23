@@ -7,11 +7,13 @@
     Shell.FlyoutBehavior="Disabled"
     Title="Ampere Chat">
 
-    <TabBar>
-        <Tab Title="Чаты" Icon="chat.png">
+    <TabBar 
+        Shell.TabBarTitleColor="#512BD4"
+        Shell.TabBarUnselectedColor="Gray">
+        <Tab Title="Чаты" Icon="chat.svg">
             <ShellContent ContentTemplate="{DataTemplate local:ChatsPage}" />
         </Tab>
-        <Tab Title="Настройки" Icon="settings.png">
+        <Tab Title="Настройки" Icon="settings.svg">
             <ShellContent ContentTemplate="{DataTemplate local:SettingsPage}" />
         </Tab>
     </TabBar>

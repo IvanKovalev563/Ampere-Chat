@@ -13,7 +13,13 @@ namespace Ampere_Chat_Client
         public ChatsPage()
         {
             InitializeComponent();
-            _apiService = AppState.ApiService ?? throw new Exception("ApiService not initialized");
+            _apiService = AppState.ApiService;
+            if (_apiService == null)
+            {
+                // Перенаправляем на логин, если сервис не инициализирован
+                Application.Current.MainPage = new NavigationPage(new LoginPage(new ApiService()));
+                return;
+            }
             BindingContext = this;
         }
 
@@ -51,6 +57,12 @@ namespace Ampere_Chat_Client
         }
         private async void OnNewChatClicked(object sender, EventArgs e)
         {
+            if (_apiService == null)
+            {
+                await DisplayAlert("Ошибка", "Сервис не инициализирован. Перезайдите.", "ОК");
+                Application.Current.MainPage = new NavigationPage(new LoginPage(new ApiService()));
+                return;
+            }
             await Navigation.PushAsync(new NewChatPage(_apiService));
         }
     }

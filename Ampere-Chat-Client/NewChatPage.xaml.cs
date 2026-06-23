@@ -14,7 +14,6 @@ namespace Ampere_Chat_Client
             InitializeComponent();
             _apiService = apiService;
             BindingContext = this;
-            OnSearchTextChanged(null, null);
         }
 
         protected override async void OnAppearing()
