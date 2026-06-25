@@ -7,8 +7,8 @@
         <converters:FirstLetterConverter x:Key="FirstLetterConverter" />
     </ContentView.Resources>
 
-    <Grid Padding="10" RowDefinitions="Auto, *">
-        <Label Grid.Row="0" Text="Чаты" FontSize="20" FontAttributes="Bold" Margin="0,0,0,10" />
+    <Grid Padding="0" RowDefinitions="Auto, *">
+        <Label Grid.Row="0" Text="Чаты" FontSize="20" FontAttributes="Bold" Margin="10,10,0,10" />
 
         <CollectionView Grid.Row="1" x:Name="ChatsCollectionView"
                         ItemsSource="{Binding Chats}"
@@ -16,7 +16,7 @@
                         SelectionChanged="OnChatSelected">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="10" ColumnDefinitions="Auto,*" Margin="0,0,0,5">
+                    <Grid Padding="10,0,0,10" ColumnDefinitions="Auto,*" Margin="0,0,0,5">
 
                         <Border Grid.Column="0"
                                 StrokeShape="RoundRectangle 25"
@@ -33,7 +33,7 @@
                                    VerticalOptions="Center" />
                         </Border>
 
-                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="10,0,0,0">
                             <Label Text="{Binding display_name}" FontSize="16" FontAttributes="Bold" />
                             <Label Text="{Binding last_message}" FontSize="14" TextColor="Gray" />
                         </VerticalStackLayout>

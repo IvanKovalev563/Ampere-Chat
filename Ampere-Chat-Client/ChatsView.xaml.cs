@@ -16,6 +16,12 @@ namespace Ampere_Chat_Client
             BindingContext = this;
         }
 
+        protected override void OnParentSet()
+        {
+            base.OnParentSet();
+            if (Parent != null)
+                LoadChats();
+        }
         public async void LoadChats()
         {
             try

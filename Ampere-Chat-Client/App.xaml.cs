@@ -23,6 +23,8 @@ namespace Ampere_Chat_Client
             {
                 _apiService.SetToken(token);
                 AppState.ApiService = _apiService;
+                AppState.SignalRService = new SignalRService();
+                await AppState.SignalRService.ConnectAsync(token);
 
                 // Для Windows и планшетов — двухколоночный вид
                 if (DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet)
@@ -45,5 +47,6 @@ namespace Ampere_Chat_Client
     public static class AppState
     {
         public static ApiService ApiService { get; set; }
+        public static SignalRService SignalRService { get; set; }
     }
 }

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using Microsoft.AspNetCore.SignalR;
+using AmpereChat.API.Hubs;
 using System.Security.Claims;
 
 namespace AmpereChat.API.Controllers
@@ -17,10 +19,12 @@ namespace AmpereChat.API.Controllers
     {
         private readonly IConfiguration _config;
         private AppRepository _repo;
-        public MessagesController(IConfiguration config, AppRepository repo)
+        private readonly IHubContext<ChatHub> _hubContext;
+        public MessagesController(IConfiguration config, AppRepository repo, IHubContext<ChatHub> hubContext)
         {
             _config = config;
             _repo = repo;
+            _hubContext = hubContext;
         }
 
 
@@ -49,19 +53,27 @@ namespace AmpereChat.API.Controllers
         
         [HttpPost]
         // POST /api/messages
+        [HttpPost]
         public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null) return Unauthorized();
             int userId = int.Parse(userIdClaim.Value);
 
-            // Chat check
             var chat = await _repo.GetChatById(request.ChatId);
             if (chat == null)
                 return BadRequest("Чат не найден");
 
-            // Временно userId берём из запроса (потом заменим на токен)
             var messageId = await _repo.AddMessage(request.ChatId, userId, request.Text);
+
+            // ===== SignalR: получить сообщение с данными и разослать =====
+            var message = await _repo.GetMessageByIdWithUser(messageId);
+            if (message != null)
+            {
+                await _hubContext.Clients.Group($"chat_{request.ChatId}")
+                    .SendAsync("ReceiveMessage", message);
+            }
+
             return Ok(new { messageId, message = "Сообщение отправлено" });
         }
 

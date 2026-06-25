@@ -88,12 +88,12 @@ namespace AmpereChat.API.Repositories
         {
             using var conn = new MySqlConnection(_connectionString);
             var sql = @"
-                        SELECT cp1.chat_id
-                        FROM Chat_Participant cp1
-                        JOIN Chat_Participant cp2 ON cp1.chat_id = cp2.chat_id
-                        WHERE cp1.user_id = @userId1 AND cp2.user_id = @userId2
-                        GROUP BY cp1.chat_id
-                        HAVING COUNT(*) = 2";
+                        SELECT cp.chat_id
+                        FROM Chat_Participant cp
+                        JOIN Chat c ON cp.chat_id = c.chat_id
+                        WHERE cp.user_id IN (@userId1, @userId2) AND c.is_group = 0
+                        GROUP BY cp.chat_id
+                        HAVING COUNT(DISTINCT cp.user_id) = 2 AND COUNT(*) = 2";
             return await conn.QueryFirstOrDefaultAsync<int?>(sql, new { userId1, userId2 });
         }
 
@@ -120,6 +120,16 @@ namespace AmpereChat.API.Repositories
                 await trans.RollbackAsync();
                 throw;
             }
+        }
+        public async Task<MessageWithUser?> GetMessageByIdWithUser(int messageId)
+        {
+            using var conn = new MySqlConnection(_connectionString);
+            var sql = @"
+        SELECT m.message_id, m.chat_id, m.user_id, m.text, m.sent_at, u.username
+        FROM Message m
+        JOIN User u ON m.user_id = u.user_id
+        WHERE m.message_id = @messageId";
+            return await conn.QueryFirstOrDefaultAsync<MessageWithUser>(sql, new { messageId });
         }
     }
 }

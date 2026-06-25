@@ -11,13 +11,43 @@
         <Grid Grid.Column="0" BackgroundColor="{DynamicResource CardBackground}">
             <Grid RowDefinitions="Auto, *">
                 <!-- Шапка -->
-                <Grid Padding="10" BackgroundColor="{DynamicResource Primary}">
-                    <Grid ColumnDefinitions="Auto, *">
-                        <Ellipse Grid.Column="0" WidthRequest="40" HeightRequest="40" Fill="White" />
-                        <ImageButton Grid.Column="1" Source="plus.png" 
-                                     WidthRequest="24" HeightRequest="24"
-                                     HorizontalOptions="End"
-                                     Clicked="OnNewChatClicked" />
+                <Grid Padding="10" BackgroundColor="{DynamicResource Primary}" >
+                    <Grid ColumnDefinitions="Auto, *, Auto">
+                        <!-- Аватар (заменить на инициал или иконку) -->
+                        <Border Grid.Column="0"
+                            StrokeShape="RoundRectangle 20"
+                            BackgroundColor="#512BD4"
+                            WidthRequest="35"
+                            HeightRequest="35"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center">
+                            <Label Text="S" 
+                               TextColor="White"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        </Border>
+
+                        <HorizontalStackLayout Grid.Column="2" Spacing="15" HorizontalOptions="End" VerticalOptions="Center">
+                            <!-- Кнопка "Новый чат" (плюс) -->
+                            <Image Source="plus_desktop_light.png"
+                                   WidthRequest="24" HeightRequest="24"
+                                   Aspect="AspectFit">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnNewChatClicked" />
+                                </Image.GestureRecognizers>
+                            </Image>
+
+                            <!-- Кнопка "Настройки" -->
+                            <Image Source="{AppThemeBinding Light=settings_desktop_light.png, Dark=settings_desktop_light.png}"
+                                   WidthRequest="24" HeightRequest="24"
+                                   Aspect="AspectFit">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnSettingsClicked" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                        </HorizontalStackLayout>
                     </Grid>
                 </Grid>
 

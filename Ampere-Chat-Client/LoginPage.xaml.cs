@@ -36,6 +36,8 @@ namespace Ampere_Chat_Client
 
             // Устанавливаем ApiService в статический класс
             AppState.ApiService = _apiService;
+            AppState.SignalRService = new SignalRService();
+            await AppState.SignalRService.ConnectAsync(token);
 
             // Переход на главную страницу
             if (DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet)

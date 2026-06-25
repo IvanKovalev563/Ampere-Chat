@@ -13,45 +13,46 @@
     <Grid RowDefinitions="*, Auto">
         <CollectionView Grid.Row="0" x:Name="MessagesCollectionView"
                         ItemsSource="{Binding Messages}"
-                        VerticalOptions="FillAndExpand">
+                        VerticalOptions="FillAndExpand"
+                        BackgroundColor="{DynamicResource PageBackgroundColor}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="*, *">
                         <!-- Левая колонка (для чужих сообщений) -->
                         <Frame Grid.Column="0" 
-                   CornerRadius="10" 
-                   Padding="10"
-                   HorizontalOptions="Start"
-                   BackgroundColor="{Binding user_id, Converter={StaticResource UserIdToColorConverter}}"
-                   IsVisible="{Binding user_id, Converter={StaticResource UserIdToVisibilityConverter}, ConverterParameter=own}"
-                   Margin="5,2">
+               CornerRadius="10" 
+               Padding="10"
+               HorizontalOptions="Start"
+               BackgroundColor="{Binding user_id, Converter={StaticResource UserIdToColorConverter}}"
+               IsVisible="{Binding user_id, Converter={StaticResource UserIdToVisibilityConverter}, ConverterParameter=!own}"
+               Margin="5,2">
                             <VerticalStackLayout>
                                 <Label Text="{Binding text}" 
-                           TextColor="Black" 
-                           FontSize="14" />
+                       TextColor="Black" 
+                       FontSize="14" />
                                 <Label Text="{Binding sent_at, StringFormat='{0:HH:mm}'}" 
-                           TextColor="Gray" 
-                           FontSize="10"
-                           HorizontalOptions="End" />
+                       TextColor="Gray" 
+                       FontSize="10"
+                       HorizontalOptions="End" />
                             </VerticalStackLayout>
                         </Frame>
 
                         <!-- Правая колонка (для своих сообщений) -->
                         <Frame Grid.Column="1" 
-                   CornerRadius="10" 
-                   Padding="10"
-                   HorizontalOptions="End"
-                   BackgroundColor="{Binding user_id, Converter={StaticResource UserIdToColorConverter}}"
-                   IsVisible="{Binding user_id, Converter={StaticResource UserIdToVisibilityConverter}, ConverterParameter=!own}"
-                   Margin="5,2">
+               CornerRadius="10" 
+               Padding="10"
+               HorizontalOptions="End"
+               BackgroundColor="{Binding user_id, Converter={StaticResource UserIdToColorConverter}}"
+               IsVisible="{Binding user_id, Converter={StaticResource UserIdToVisibilityConverter}, ConverterParameter=own}"
+               Margin="5,2">
                             <VerticalStackLayout>
                                 <Label Text="{Binding text}" 
-                           TextColor="Black" 
-                           FontSize="14" />
+                       TextColor="Black" 
+                       FontSize="14" />
                                 <Label Text="{Binding sent_at, StringFormat='{0:HH:mm}'}" 
-                           TextColor="Gray" 
-                           FontSize="10"
-                           HorizontalOptions="End" />
+                       TextColor="Gray" 
+                       FontSize="10"
+                       HorizontalOptions="End" />
                             </VerticalStackLayout>
                         </Frame>
                     </Grid>

@@ -6,9 +6,11 @@ namespace Ampere_Chat_Client
     public partial class ChatDetailView : ContentView
     {
         private readonly ApiService _apiService;
-        private int _chatId;
+        private readonly int _chatId;
+        private SignalRService _signalRService;
         public ObservableCollection<MessageDto> Messages { get; set; } = new();
         public int CurrentUserId { get; set; }
+        private bool _isLoading = false;
 
         public ChatDetailView(ApiService apiService, int chatId)
         {
@@ -17,32 +19,95 @@ namespace Ampere_Chat_Client
             _chatId = chatId;
             CurrentUserId = AppState.ApiService?.GetCurrentUserId() ?? 0;
             BindingContext = this;
+
+            _signalRService = AppState.SignalRService;
+            if (_signalRService != null)
+            {
+                _signalRService.OnMessageReceived += OnNewMessage;
+                _ = _signalRService.JoinChat(chatId);
+            }
+
+            this.Unloaded += (s, e) =>
+            {
+                if (_signalRService != null)
+                {
+                    _signalRService.OnMessageReceived -= OnNewMessage;
+                    _ = _signalRService.LeaveChat(_chatId);
+                }
+            };
+        }
+
+        private void OnNewMessage(MessageDto message)
+        {
+            if (message.chat_id != _chatId) return;
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                InsertMessage(message);
+                ScrollToEnd();
+            });
+        }
+
+        private void InsertMessage(MessageDto message)
+        {
+            // Проверяем, нет ли уже такого ID
+            var existing = Messages.FirstOrDefault(m => m.message_id == message.message_id);
+            if (existing != null)
+            {
+                var idx = Messages.IndexOf(existing);
+                Messages[idx] = message;
+                return;
+            }
+
+            // Вставляем по времени
+            int insertIndex = 0;
+            for (int i = Messages.Count - 1; i >= 0; i--)
+            {
+                if (Messages[i].sent_at <= message.sent_at)
+                {
+                    insertIndex = i + 1;
+                    break;
+                }
+            }
+            Messages.Insert(insertIndex, message);
+        }
+
+        private void ScrollToEnd()
+        {
+            if (Messages.Count == 0) return;
+            try
+            {
+                var last = Messages.OrderBy(m => m.sent_at).LastOrDefault();
+                if (last != null)
+                {
+                    var idx = Messages.IndexOf(last);
+                    if (idx >= 0)
+                        MessagesCollectionView.ScrollTo(idx, position: ScrollToPosition.End, animate: false);
+                }
+            }
+            catch { }
         }
 
         public async Task LoadMessages()
         {
+            if (_isLoading) return;
+            _isLoading = true;
             try
             {
-                var messageList = await _apiService.GetMessagesAsync(_chatId);
+                var list = await _apiService.GetMessagesAsync(_chatId);
                 Messages.Clear();
-                foreach (var msg in messageList.OrderBy(m => m.sent_at))
+                foreach (var msg in list.OrderBy(m => m.sent_at))
                     Messages.Add(msg);
+                ScrollToEnd();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка загрузки сообщений: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Load error: {ex.Message}");
             }
+            finally { _isLoading = false; }
         }
 
-        private async void OnSendClicked(object sender, EventArgs e)
-        {
-            await SendMessage();
-        }
-
-        private async void OnMessageEntryCompleted(object sender, EventArgs e)
-        {
-            await SendMessage();
-        }
+        private async void OnSendClicked(object sender, EventArgs e) => await SendMessage();
+        private async void OnMessageEntryCompleted(object sender, EventArgs e) => await SendMessage();
 
         private async Task SendMessage()
         {
@@ -55,7 +120,11 @@ namespace Ampere_Chat_Client
                 if (success)
                 {
                     MessageEntry.Text = "";
-                    await LoadMessages();
+                    // Ждём SignalR — сообщение придёт само
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Ошибка", "Не удалось отправить", "ОК");
                 }
             }
             catch (Exception ex)

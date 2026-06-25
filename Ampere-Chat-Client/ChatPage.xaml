@@ -40,11 +40,18 @@
                    Grid.Column="0"
                    ReturnType="Send"
                    Completed="OnMessageEntryCompleted" />
-            <Button Text="Отправить" 
-                    Grid.Column="1" 
-                    Clicked="OnSendClicked"
-                    BackgroundColor="#512BD4"
-                    TextColor="White" />
+            <ImageButton Grid.Column="1" 
+                 Source="send.svg" 
+                 WidthRequest="40" 
+                 HeightRequest="40"
+                 CornerRadius="25"
+                 BackgroundColor="#512BD4"
+                 Padding="12"
+                 Aspect="AspectFit"
+                 HorizontalOptions="Center"
+                 VerticalOptions="Center"
+                 Margin="5,0,0,0"
+                 Clicked="OnSendClicked" />
         </Grid>
     </Grid>
 </ContentPage>

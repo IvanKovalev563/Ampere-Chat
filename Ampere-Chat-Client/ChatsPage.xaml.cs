@@ -28,6 +28,13 @@ namespace Ampere_Chat_Client
             base.OnAppearing();
             await LoadChats();
         }
+        // В ChatsView.xaml.cs
+        protected override void OnParentSet()
+        {
+            base.OnParentSet();
+            if (Parent != null)
+                LoadChats();
+        }
 
         private async Task LoadChats()
         {
@@ -37,6 +44,11 @@ namespace Ampere_Chat_Client
                 Chats.Clear();
                 foreach (var chat in chatList)
                     Chats.Add(chat);
+            }
+            catch (TaskCanceledException)
+            {
+                // Просто игнорируем — запрос отменён пользователем (переключение вкладки и т.п.)
+                System.Diagnostics.Debug.WriteLine("Загрузка чатов отменена");
             }
             catch (Exception ex)
             {
