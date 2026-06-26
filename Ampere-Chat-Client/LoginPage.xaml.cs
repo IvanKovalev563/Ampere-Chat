@@ -18,15 +18,28 @@ namespace Ampere_Chat_Client
             var username = UsernameEntry.Text?.Trim();
             var password = PasswordEntry.Text;
 
+            LoginButton.IsEnabled = false;
+            LoginButton.Text = "";
+            LoginIndicator.IsRunning = true;
+            LoginIndicator.IsVisible = true;
+
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 ShowMessage("Введите логин и пароль");
+                LoginButton.IsEnabled = true;
+                LoginButton.Text = "Войти";
+                LoginIndicator.IsRunning = false;
+                LoginIndicator.IsVisible = false;
                 return;
             }
 
             if (!ApiService.IsNetworkAvailable())
             {
                 ShowMessage("Нет интернета. Проверьте подключение.");
+                LoginButton.IsEnabled = true;
+                LoginButton.Text = "Войти";
+                LoginIndicator.IsRunning = false;
+                LoginIndicator.IsVisible = false;
                 return;
             }
 
@@ -36,6 +49,10 @@ namespace Ampere_Chat_Client
                 if (token == null)
                 {
                     ShowMessage("Неверный логин или пароль");
+                    LoginButton.IsEnabled = true;
+                    LoginButton.Text = "Войти";
+                    LoginIndicator.IsRunning = false;
+                    LoginIndicator.IsVisible = false;
                     return;
                 }
 
@@ -64,6 +81,13 @@ namespace Ampere_Chat_Client
             {
                 ShowMessage($"Ошибка входа: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Login error: {ex}");
+            }
+            finally
+            {
+                LoginButton.IsEnabled = true;
+                LoginButton.Text = "Войти";
+                LoginIndicator.IsRunning = false;
+                LoginIndicator.IsVisible = false;
             }
         }
 

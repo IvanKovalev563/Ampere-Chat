@@ -11,7 +11,10 @@
             <Entry x:Name="UsernameEntry" Placeholder="Имя пользователя" />
             <Entry x:Name="PasswordEntry" Placeholder="Пароль" IsPassword="True" />
 
-            <Button Text="Войти" Clicked="OnLoginClicked" BackgroundColor="#512BD4" TextColor="White" />
+            <Grid>
+                <Button x:Name="LoginButton" Text="Войти" Clicked="OnLoginClicked" BackgroundColor="#512BD4" TextColor="White" />
+                <ActivityIndicator x:Name="LoginIndicator" IsRunning="False" IsVisible="False" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="20" HeightRequest="20"/>
+            </Grid>
             <Button Text="Зарегистрироваться" Clicked="OnRegisterClicked" BackgroundColor="Transparent" TextColor="#512BD4" />
 
             <Label x:Name="MessageLabel" Text="" IsVisible="False" TextColor="Red" HorizontalOptions="Center" />
