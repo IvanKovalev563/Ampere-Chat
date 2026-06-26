@@ -1,6 +1,5 @@
 using Ampere_Chat_Client.Services;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 
 namespace Ampere_Chat_Client
 {
@@ -9,6 +8,7 @@ namespace Ampere_Chat_Client
         public event EventHandler<ChatDto> ChatSelected;
         private readonly ApiService _apiService;
         public ObservableCollection<ChatDto> Chats { get; set; } = new();
+        private bool _isLoading = false;
 
         public ChatsPage()
         {
@@ -16,11 +16,11 @@ namespace Ampere_Chat_Client
             _apiService = AppState.ApiService;
             if (_apiService == null)
             {
-                // Перенаправляем на логин, если сервис не инициализирован
                 Application.Current.MainPage = new NavigationPage(new LoginPage(new ApiService()));
                 return;
             }
             BindingContext = this;
+            App.NetworkRestored += OnNetworkRestored;
         }
 
         protected override async void OnAppearing()
@@ -28,18 +28,37 @@ namespace Ampere_Chat_Client
             base.OnAppearing();
             await LoadChats();
         }
-        // В ChatsView.xaml.cs
-        protected override void OnParentSet()
+
+        protected override void OnDisappearing()
         {
-            base.OnParentSet();
-            if (Parent != null)
-                LoadChats();
+            base.OnDisappearing();
+            App.NetworkRestored -= OnNetworkRestored;
+        }
+
+        private void OnNetworkRestored(object sender, EventArgs e)
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await LoadChats();
+            });
         }
 
         private async Task LoadChats()
         {
+            if (_isLoading) return;
+            _isLoading = true;
+            
+            LoadingIndicator.IsRunning = true;
+            LoadingIndicator.IsVisible = true;
+
             try
             {
+                if (!ApiService.IsNetworkAvailable())
+                {
+                    await DisplayAlert("Нет сети", "Проверьте подключение к интернету", "ОК");
+                    return;
+                }
+
                 var chatList = await _apiService.GetChatsAsync();
                 Chats.Clear();
                 foreach (var chat in chatList)
@@ -47,12 +66,21 @@ namespace Ampere_Chat_Client
             }
             catch (TaskCanceledException)
             {
-                // Просто игнорируем — запрос отменён пользователем (переключение вкладки и т.п.)
                 System.Diagnostics.Debug.WriteLine("Загрузка чатов отменена");
+            }
+            catch (HttpRequestException)
+            {
+                await DisplayAlert("Ошибка сети", "Не удалось загрузить чаты. Проверьте интернет.", "ОК");
             }
             catch (Exception ex)
             {
                 await DisplayAlert("Ошибка", $"Не удалось загрузить чаты: {ex.Message}", "ОК");
+            }
+            finally
+            {
+                LoadingIndicator.IsRunning = false;
+                LoadingIndicator.IsVisible = false;
+                _isLoading = false;
             }
         }
 
@@ -62,11 +90,11 @@ namespace Ampere_Chat_Client
             {
                 ChatsCollectionView.SelectedItem = null;
                 ChatSelected?.Invoke(this, selectedChat);
-                // Если на мобилке — переходим на ChatPage
                 if (DeviceInfo.Idiom == DeviceIdiom.Phone)
                     await Navigation.PushAsync(new ChatPage(_apiService, selectedChat.chat_id, selectedChat.display_name));
             }
         }
+
         private async void OnNewChatClicked(object sender, EventArgs e)
         {
             if (_apiService == null)

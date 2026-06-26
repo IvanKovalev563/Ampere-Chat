@@ -24,26 +24,47 @@ namespace Ampere_Chat_Client
                 return;
             }
 
-            var token = await _apiService.LoginAsync(username, password);
-            if (token == null)
+            if (!ApiService.IsNetworkAvailable())
             {
-                ShowMessage("Неверный логин или пароль");
+                ShowMessage("Нет интернета. Проверьте подключение.");
                 return;
             }
 
-            Preferences.Set("auth_token", token);
-            _apiService.SetToken(token);
+            try
+            {
+                var token = await _apiService.LoginAsync(username, password);
+                if (token == null)
+                {
+                    ShowMessage("Неверный логин или пароль");
+                    return;
+                }
 
-            // Устанавливаем ApiService в статический класс
-            AppState.ApiService = _apiService;
-            AppState.SignalRService = new SignalRService();
-            await AppState.SignalRService.ConnectAsync(token);
+                Preferences.Set("auth_token", token);
+                _apiService.SetToken(token);
+                AppState.ApiService = _apiService;
 
-            // Переход на главную страницу
-            if (DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet)
-                Application.Current.MainPage = new NavigationPage(new DesktopMainPage(_apiService));
-            else
-                Application.Current.MainPage = new AppShell();
+                try
+                {
+                    AppState.SignalRService = new SignalRService();
+                    await AppState.SignalRService.ConnectAsync(token);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"SignalR не подключился: {ex.Message}");
+                    // Не блокируем вход, если SignalR не работает
+                }
+
+                // Переход на главную страницу
+                if (DeviceInfo.Idiom == DeviceIdiom.Desktop || DeviceInfo.Idiom == DeviceIdiom.Tablet)
+                    Application.Current.MainPage = new NavigationPage(new DesktopMainPage(_apiService));
+                else
+                    Application.Current.MainPage = new AppShell();
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Ошибка входа: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Login error: {ex}");
+            }
         }
 
         private async void OnRegisterClicked(object sender, EventArgs e)
@@ -57,14 +78,28 @@ namespace Ampere_Chat_Client
                 return;
             }
 
-            var success = await _apiService.RegisterAsync(username, password);
-            if (success)
+            if (!ApiService.IsNetworkAvailable())
             {
-                ShowMessage("Регистрация успешна! Теперь войдите.", false);
+                ShowMessage("Нет интернета. Проверьте подключение.");
+                return;
             }
-            else
+
+            try
             {
-                ShowMessage("Ошибка регистрации. Возможно, имя занято.");
+                var success = await _apiService.RegisterAsync(username, password);
+                if (success)
+                {
+                    ShowMessage("Регистрация успешна! Теперь войдите.", false);
+                }
+                else
+                {
+                    ShowMessage("Ошибка регистрации. Возможно, имя занято.");
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Ошибка регистрации: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Register error: {ex}");
             }
         }
 

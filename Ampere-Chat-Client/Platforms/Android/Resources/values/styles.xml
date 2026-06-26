@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="MyTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+		<item name="colorPrimary">#512BD4</item>
+		<item name="colorPrimaryVariant">#1A1A2E</item>
+		<item name="colorOnPrimary">#FFFFFF</item>
+		<item name="colorSecondary">#512BD4</item>
+		<item name="colorOnSecondary">#FFFFFF</item>
+		<item name="android:statusBarColor">#512BD4</item>
+	</style>
+</resources>

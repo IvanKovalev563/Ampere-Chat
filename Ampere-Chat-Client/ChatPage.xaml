@@ -40,18 +40,22 @@
                    Grid.Column="0"
                    ReturnType="Send"
                    Completed="OnMessageEntryCompleted" />
-            <ImageButton Grid.Column="1" 
-                 Source="send.svg" 
-                 WidthRequest="40" 
-                 HeightRequest="40"
-                 CornerRadius="25"
-                 BackgroundColor="#512BD4"
-                 Padding="12"
-                 Aspect="AspectFit"
-                 HorizontalOptions="Center"
-                 VerticalOptions="Center"
-                 Margin="5,0,0,0"
-                 Clicked="OnSendClicked" />
+            <Grid Grid.Column="1" WidthRequest="38" HeightRequest="38">
+                <Border StrokeThickness="0"
+                BackgroundColor="#512BD4"
+                StrokeShape="RoundRectangle 20">
+                    <Image Source="send.png"
+                   Aspect="AspectFit"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   WidthRequest="20"
+                   HeightRequest="20">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnSendClicked" />
+                        </Image.GestureRecognizers>
+                    </Image>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </ContentPage>

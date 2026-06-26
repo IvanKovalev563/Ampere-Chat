@@ -93,15 +93,24 @@ namespace Ampere_Chat_Client
             _isLoading = true;
             try
             {
+                if (!ApiService.IsNetworkAvailable())
+                {
+                    await Application.Current.MainPage.DisplayAlert("Нет сети", "Проверьте подключение к интернету", "ОК");
+                    return;
+                }
                 var list = await _apiService.GetMessagesAsync(_chatId);
                 Messages.Clear();
                 foreach (var msg in list.OrderBy(m => m.sent_at))
                     Messages.Add(msg);
                 ScrollToEnd();
             }
+            catch (HttpRequestException)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка сети", "Не удалось загрузить сообщения. Проверьте интернет.", "ОК");
+            }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Load error: {ex.Message}");
+                await Application.Current.MainPage.DisplayAlert("Ошибка", $"Не удалось загрузить сообщения: {ex.Message}", "ОК");
             }
             finally { _isLoading = false; }
         }

@@ -39,12 +39,12 @@
 
                         <!-- Правая колонка (для своих сообщений) -->
                         <Frame Grid.Column="1" 
-               CornerRadius="10" 
-               Padding="10"
-               HorizontalOptions="End"
-               BackgroundColor="{Binding user_id, Converter={StaticResource UserIdToColorConverter}}"
-               IsVisible="{Binding user_id, Converter={StaticResource UserIdToVisibilityConverter}, ConverterParameter=own}"
-               Margin="5,2">
+                               CornerRadius="10" 
+                               Padding="10"
+                               HorizontalOptions="End"
+                               BackgroundColor="{Binding user_id, Converter={StaticResource UserIdToColorConverter}}"
+                               IsVisible="{Binding user_id, Converter={StaticResource UserIdToVisibilityConverter}, ConverterParameter=own}"
+                               Margin="5,2">
                             <VerticalStackLayout>
                                 <Label Text="{Binding text}" 
                        TextColor="Black" 
@@ -66,11 +66,22 @@
                    Grid.Column="0"
                    ReturnType="Send"
                    Completed="OnMessageEntryCompleted" />
-            <Button Text="Отправить" 
-                    Grid.Column="1" 
-                    Clicked="OnSendClicked"
-                    BackgroundColor="#512BD4"
-                    TextColor="White" />
+            <Grid Grid.Column="1" WidthRequest="38" HeightRequest="38" Margin="5,0,0,0">
+                <Border StrokeThickness="0"
+                        BackgroundColor="#512BD4"
+                        StrokeShape="RoundRectangle 20">
+                    <Image Source="send.png"
+                           Aspect="AspectFit"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           WidthRequest="20"
+                           HeightRequest="20">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnSendClicked" />
+                        </Image.GestureRecognizers>
+                    </Image>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </ContentView>

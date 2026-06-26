@@ -26,8 +26,14 @@ namespace Ampere_Chat_Client
         {
             try
             {
+                // ===== Проверка сети =====
+                if (!ApiService.IsNetworkAvailable())
+                {
+                    await DisplayAlert("Нет сети", "Проверьте подключение к интернету", "ОК");
+                    return;
+                }
+
                 _allUsers = await _apiService.GetAllUsersAsync();
-                // Исключаем текущего пользователя (его не должно быть в списке)
                 var currentUserId = AppState.ApiService?.GetCurrentUserId() ?? 0;
                 _allUsers = _allUsers.Where(u => u.user_id != currentUserId).ToList();
 
@@ -38,6 +44,10 @@ namespace Ampere_Chat_Client
                 FilteredUsers.Clear();
                 foreach (var user in _allUsers)
                     FilteredUsers.Add(user);
+            }
+            catch (HttpRequestException)
+            {
+                await DisplayAlert("Ошибка сети", "Не удалось загрузить пользователей. Проверьте интернет.", "ОК");
             }
             catch (Exception ex)
             {
@@ -70,10 +80,16 @@ namespace Ampere_Chat_Client
 
                 try
                 {
+                    // ===== Проверка сети =====
+                    if (!ApiService.IsNetworkAvailable())
+                    {
+                        await DisplayAlert("Нет сети", "Проверьте подключение к интернету", "ОК");
+                        return;
+                    }
+
                     var result = await _apiService.CreatePrivateChatAsync(selectedUser.user_id);
                     if (result != null && result.chatId > 0)
                     {
-                        // Закрываем текущую страницу и открываем чат
                         await Navigation.PopAsync();
                         await Navigation.PushAsync(new ChatPage(_apiService, result.chatId, selectedUser.username));
                     }
@@ -81,6 +97,10 @@ namespace Ampere_Chat_Client
                     {
                         await DisplayAlert("Ошибка", "Не удалось создать чат", "ОК");
                     }
+                }
+                catch (HttpRequestException)
+                {
+                    await DisplayAlert("Ошибка сети", "Не удалось создать чат. Проверьте интернет.", "ОК");
                 }
                 catch (Exception ex)
                 {

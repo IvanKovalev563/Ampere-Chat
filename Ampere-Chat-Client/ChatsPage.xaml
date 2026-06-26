@@ -43,5 +43,12 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+        <ActivityIndicator Grid.RowSpan="2"
+               x:Name="LoadingIndicator"
+               IsRunning="False"
+               IsVisible="False"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               Color="{AppThemeBinding Light=Black, Dark=White}" />
     </Grid>
 </ContentPage>

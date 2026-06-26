@@ -104,6 +104,10 @@ namespace Ampere_Chat_Client.Services
             }
             return 0;
         }
+        public static bool IsNetworkAvailable()
+        {
+            return Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+        }
     }
 
     // DTO для чатов

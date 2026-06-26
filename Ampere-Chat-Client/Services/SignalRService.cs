@@ -64,10 +64,15 @@ namespace Ampere_Chat_Client.Services
             {
                 await _hubConnection.StartAsync();
             }
+            catch (HttpRequestException ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Проверьте подключение к интернету.\nSignalR connection failed (HTTP): {ex.Message}");
+                // Не пробрасываем дальше
+            }
             catch (Exception ex)
             {
-                OnError?.Invoke($"Ошибка подключения: {ex.Message}");
-                throw;
+                System.Diagnostics.Debug.WriteLine($"SignalR connection failed: {ex.Message}");
+                // Не пробрасываем дальше
             }
         }
 
